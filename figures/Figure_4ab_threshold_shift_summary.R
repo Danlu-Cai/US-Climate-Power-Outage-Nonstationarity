@@ -7,16 +7,17 @@
 # Input: Figure 3b ALE zero-crossing threshold summary CSV files.
 # Dependencies: dplyr, tidyr, ggplot2, stringr
 # =============================================================================
-
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(stringr)
 
-# Match the directory structure used by Figure 3b.
-fig3_output_dir <- Sys.getenv("FIG3_OUTPUT_DIR", unset = "results/figure3")
-output_dir <- Sys.getenv("FIG4_OUTPUT_DIR", unset = "results/figure4")
-if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+input_base_dir <- Sys.getenv("FIG4_INPUT_DIR", unset = "data/processed")
+output_dir     <- Sys.getenv("FIG4_OUTPUT_DIR", unset = "results/figure3")
+
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
 
 non_conus_abbr <- c("AK", "HI", "PR", "VI", "GU", "MP", "AS")
 
@@ -315,7 +316,7 @@ build_panel_4b_dotplot <- function(df_raw) {
     ) +
     coord_cartesian(clip = "off") +
     labs(
-      x = expression(bold("Standardized threshold shift (" * Delta * " / IQR of shifts)")),
+      x = expression(bold("Standardized threshold shift (" * Delta * " / historical IQR)")),
       y = NULL
     ) +
     theme_classic(base_size = 26) +
@@ -345,7 +346,7 @@ build_panel_4b_dotplot <- function(df_raw) {
 # ==============================================================================
 run_fig4_export_all <- function(metric_name = "monthly_coh", model_type = "RF", eps = 0.05) {
   
-  fig3b_folder <- file.path(fig3_output_dir, paste0("Figure3b_", metric_name, "_", model_type))
+  fig3b_folder <- file.path(input_base_dir, paste0("Figure3b_", metric_name, "_", model_type))
   csv_input_path <- file.path(fig3b_folder, "All_Regions_TwoPeriod_SafetyWindow_Thresholds.csv")
   
   if (!file.exists(csv_input_path)) {
@@ -355,14 +356,6 @@ run_fig4_export_all <- function(metric_name = "monthly_coh", model_type = "RF", 
   
   df_raw <- read.csv(csv_input_path, stringsAsFactors = FALSE, colClasses = "character")
   names(df_raw) <- tolower(names(df_raw))
-  if (!"region_type" %in% names(df_raw)) {
-    stop("Figure 3b threshold CSV must contain Region_Type to identify state-level rows.")
-  }
-  df_raw <- df_raw[tolower(trimws(df_raw$region_type)) %in% c("statewise", "state"), , drop = FALSE]
-  if (nrow(df_raw) == 0) {
-    warning("No state-level thresholds available in: ", csv_input_path)
-    return(NULL)
-  }
   
   # 1. Export Figure 4a
   p_4a <- build_fig4_barchart(df_raw, eps = eps)
@@ -398,6 +391,10 @@ run_fig4_export_all <- function(metric_name = "monthly_coh", model_type = "RF", 
 }
 
 # Run execution
+run_fig4_export_all(metric_name = "monthly_coh",          model_type = "XGBoost", eps = 0.05)
+run_fig4_export_all(metric_name = "monthly_coh",          model_type = "RF",      eps = 0.05)
+run_fig4_export_all(metric_name = "monthly_outage_hours", model_type = "XGBoost", eps = 0.05)
+run_fig4_export_all(metric_name = "monthly_outage_hours", model_type = "RF",      eps = 0.05)
 run_fig4_export_all(metric_name = "monthly_coh",          model_type = "XGBoost", eps = 0.05)
 run_fig4_export_all(metric_name = "monthly_coh",          model_type = "RF",      eps = 0.05)
 run_fig4_export_all(metric_name = "monthly_outage_hours", model_type = "XGBoost", eps = 0.05)
