@@ -24,8 +24,8 @@ conflicts_prefer(dplyr::filter)
 # --- 1. Global Setup & Core Helper Functions ---
 # ==============================================================================
 
-Input_ROOT <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related" 
-save_path  <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related_final" 
+input_base_dir <- Sys.getenv("FIG3_INPUT_DIR", unset = "data/processed")
+output_dir     <- Sys.getenv("FIG3_OUTPUT_DIR", unset = "results/figure3")
 csv_path   <- file.path(save_path, "Fig3_csv_results") 
 
 if (!dir.exists(save_path)) dir.create(save_path, recursive = TRUE)
