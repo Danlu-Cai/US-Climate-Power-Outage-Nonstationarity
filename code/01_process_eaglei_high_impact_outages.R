@@ -14,7 +14,7 @@
 # continuous county-level outage event lasting > 8 hours.
 #
 # Dependencies: data.table, lubridate
-# =============================================================================
+# 
 # Purpose: Aggregate EAGLE-I 15-minute county outage snapshots (2015–2024),
 #          identify qualifying continuous county-level outage events, and
 #          create hourly, daily, monthly and annual summaries.
@@ -34,9 +34,6 @@
 #   - Each day overlapping a qualifying event must separately exceed 5,000 COH.
 #   - Timestamps must be expressed in one consistent timezone. Default UTC.
 #   - All annual files must be available to detect events crossing year ends.
-#
-# Dependencies: data.table, lubridate
-# Install once: install.packages(c('data.table', 'lubridate'))
 # =============================================================================
 
 suppressPackageStartupMessages({
