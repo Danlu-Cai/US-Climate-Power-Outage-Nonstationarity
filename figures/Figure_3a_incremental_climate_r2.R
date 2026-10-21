@@ -24,9 +24,9 @@ conflicts_prefer(dplyr::filter)
 # --- 1. Global Setup & Core Helper Functions ---
 # ==============================================================================
 
-Input_ROOT <- Sys.getenv("FIG3_INPUT_DIR", unset = "data/processed")
-save_path <- Sys.getenv("FIG3_OUTPUT_DIR", unset = "results/figure3")
-csv_path <- file.path(save_path, "Fig3_csv_results")
+Input_ROOT <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related" 
+save_path  <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related_final" 
+csv_path   <- file.path(save_path, "Fig3_csv_results") 
 
 if (!dir.exists(save_path)) dir.create(save_path, recursive = TRUE)
 if (!dir.exists(csv_path))  dir.create(csv_path, recursive = TRUE)
@@ -95,7 +95,6 @@ load_and_prep_data_fig3 <- function(metric_name) {
   if (!file.exists(file_path)) stop("Data file not found at: ", file_path)
   
   df_full <- read_csv(file_path, show_col_types = FALSE)
-  if (!metric_name %in% names(df_full)) stop("Missing outcome column: ", metric_name)
   
   pop_col     <- base::intersect(c("population", "Pop", "pop"), names(df_full))[1]
   density_col <- base::intersect(c("pop_density", "Pop_Density", "density"), names(df_full))[1]
@@ -252,7 +251,6 @@ run_fig3a <- function(metric_name = "annual_coh", model_type = "XGBoost") {
   res_df <- res_df %>%
     mutate(Incremental_R2 = round(Incremental_R2, 2))
   
-  if (!any(is.finite(res_df$Incremental_R2))) stop("No finite incremental R2 values for ", metric_name)
   min_val <- min(res_df$Incremental_R2, na.rm = TRUE)
   max_val <- max(res_df$Incremental_R2, na.rm = TRUE)
   
@@ -393,6 +391,9 @@ run_fig3a <- function(metric_name = "annual_coh", model_type = "XGBoost") {
 
 # --- Figure 3a Executions ---
 run_fig3a(metric_name = "annual_coh", model_type = "XGBoost")
+run_fig3a(metric_name = "annual_coh", model_type = "RF")
+run_fig3a(metric_name = "annual_outage_hours", model_type = "XGBoost")
+run_fig3a(metric_name = "annual_outage_hours", model_type = "RF")
 run_fig3a(metric_name = "annual_coh", model_type = "RF")
 run_fig3a(metric_name = "annual_outage_hours", model_type = "XGBoost")
 run_fig3a(metric_name = "annual_outage_hours", model_type = "RF")
