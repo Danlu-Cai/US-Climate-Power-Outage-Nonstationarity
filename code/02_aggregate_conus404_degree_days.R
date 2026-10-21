@@ -1,8 +1,23 @@
+
 # =============================================================================
-# CONUS404 county-level degree-day aggregation (October 1979–September 2022)
-# Original analysis: Danlu Cai
-# Reproducible adaptation: configurable paths, input checks, coverage diagnostics
+# Script: 02_aggregate_conus404_degree_days.R
+# Project: Climate–Power Outage Relationships Across the United States
+# Author: Danlu Cai
+#
+# Description:
+# Process CONUS404 county-level daily mean air temperature data
+# (October 1979–September 2022) to calculate cooling degree days
+# (CDD) and heating degree days (HDD), and generate daily, monthly,
+# calendar-year, and water-year summaries.
+#
+# Degree-day definition:
+# CDD = max(T_daily - 18.3, 0)
+# HDD = max(18.3 - T_daily, 0)
+# Temperature units: degrees Celsius
+#
+# Dependencies: data.table
 # =============================================================================
+
 
 suppressPackageStartupMessages(library(data.table))
 
