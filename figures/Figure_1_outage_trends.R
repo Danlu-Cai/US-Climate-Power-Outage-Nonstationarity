@@ -30,8 +30,9 @@ library(patchwork)
 # 0. GLOBAL SETUP, PATHS & TYPOGRAPHY
 # ==============================================================================
 
-daily_summary_dir <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/Daily_Summary/"
-output_dir        <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related_final"
+daily_summary_dir <- Sys.getenv("EAGLEI_DAILY_SUMMARY_DIR", unset = "results/eaglei_high_impact/Daily_Summary")
+output_dir <- Sys.getenv("FIGURE1_OUTPUT_DIR", unset = "results/figures/figure1")
+
 
 if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
