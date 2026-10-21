@@ -1,22 +1,180 @@
-Scripts and outputs for manuscript figures
-
 # Figure Generation Scripts
 
 **Project:** Climate–Power Outage Relationships Across the United States  
 **Author:** Danlu Cai
 
-## Figure 1: Spatiotemporal Patterns of High-Impact Power Outages
+## Overview
+
+This directory contains R scripts used to generate the main figures for the manuscript examining spatiotemporal changes in climate–power outage relationships across the contiguous United States (CONUS).
+
+The analyses use EAGLE-I power outage observations and CONUS404 climate data, with machine-learning models including XGBoost and Random Forest.
+
+The figure-generation scripts cover four main research components:
+
+1. Spatiotemporal patterns of high-impact power outages.
+2. Temporal nonstationarity in climate–power outage relationships.
+3. Climate-driver contributions and nonlinear response relationships.
+4. Geographic heterogeneity in climate-response threshold shifts.
+
+## Figure Scripts
+
+### Figure 1 — Spatiotemporal Patterns of High-Impact Power Outages
 
 **Script:** `Figure_1_outage_trends.R`
 
-Generates Figure 1 panels using EAGLE-I county-level daily outage summaries (2015–2024).
+Analyzes county-level high-impact power outage patterns across the United States during 2015–2024.
 
-- **Figure 1a:** Spatial trends in county-level outage hours.
+- **Figure 1a:** Spatial patterns of county-level outage-hour trends.
 - **Figure 1b:** Regional heterogeneity in outage-hour trends.
-- **Figure 1c:** National annual outage duration and customer outage hours.
-- **Figure 1d(i):** Monthly changes in high-impact outage county-days.
-- **Figure 1d(ii):** Seasonal contributions to total outage hours.
+- **Figure 1c:** National annual trends in outage duration and customer outage hours.
+- **Figure 1d:** Monthly and seasonal patterns of high-impact outages.
 
-Outputs include individual high-resolution PNG panels and supporting CSV tables.
+**Outputs:** High-resolution PNG panels and supporting CSV tables.
 
-County trend estimates use linear regression with monthly controls and heteroskedasticity/autocorrelation-consistent (HAC) standard errors.
+### Figure 2 — Temporal Nonstationarity of Climate–Power Outage Relationships
+
+**Script:** `Figure_2_nonstationarity.R`
+
+Evaluates changes in machine-learning model performance and climate–outage relationships using county-year data for 2015–2022.
+
+- **Figure 2a:** Historical versus rolling-model predictive performance.
+- **Figure 2b:** Out-of-time prediction across training windows.
+- **Figure 2c:** Relative predictive performance differences.
+- **Figure 2d:** Annual signal-to-noise ratio.
+- **Figure 2e:** Temporal changes in predictor importance.
+- **Figure 2f:** Temperature distribution shifts and model-response attribution.
+
+**Models:** XGBoost and Random Forest.
+
+**Outputs:** High-resolution PNG figures and supporting CSV tables.
+
+### Figure 3 — Climate Contributions and Nonlinear Response Relationships
+
+**Scripts:**
+
+- `Figure_3a_incremental_climate_r2.R`
+- `Figure_3b_climate_driver_ALE.R`
+- `Figure_3c_ALE_threshold_heatmap.R`
+
+**Figure 3a — Incremental Predictive Contribution of Climate Variables**
+
+Compares the incremental cross-validated R² associated with climate predictors between historical (2015–2018) and recent (2019–2022) periods.
+
+Results are evaluated nationally and across nine U.S. climate regions using XGBoost and Random Forest.
+
+**Figure 3b — Climate-Driver Accumulated Local Effects**
+
+Estimates nonlinear model-response relationships for eight climate variables:
+
+- Mean temperature
+- Cooling degree days
+- Heating degree days
+- Extreme heat days
+- Extreme cold days
+- Extreme-event frequency
+- Maximum event magnitude
+- Storm days
+
+The analysis compares historical and recent periods at CONUS, regional, and state levels.
+
+Bootstrap resampling is used to characterize variability in accumulated local effects (ALE).
+
+**Figure 3c — Regional ALE Zero-Crossing Threshold Shifts**
+
+Visualizes standardized changes in estimated ALE zero-crossing thresholds between historical and recent periods.
+
+**Inputs:** Merged annual and monthly climate–outage datasets, and threshold summaries produced by Figure 3b.
+
+**Outputs:** ALE plots, regional heatmaps, threshold CSV tables, and PNG figures.
+
+### Figure 4 — Spatial Heterogeneity in Climate-Response Threshold Shifts
+
+**Scripts:**
+
+- `Figure_4ab_threshold_shift_summary.R`
+- `Figure_4c_threshold_shift_maps.R`
+
+**Figure 4a — Direction of Threshold Shifts**
+
+Summarizes the proportions of states exhibiting lower, unchanged, or higher estimated ALE zero-crossing thresholds across eight climate drivers.
+
+**Figure 4b — Distribution of Standardized Threshold Shifts**
+
+Shows median threshold shifts and their distribution across states, including interquartile and 5th–95th percentile ranges.
+
+**Figure 4c — Geographic Distribution of Threshold Shifts**
+
+Maps state-level changes in estimated ALE zero-crossing thresholds for eight climate drivers.
+
+**Inputs:** State-level threshold estimates generated by Figure 3b.
+
+**Outputs:** High-resolution PNG figures.
+
+## Execution Order
+
+Run the scripts in the following order:
+
+```text
+Figure_1_outage_trends.R
+Figure_2_nonstationarity.R
+
+Figure_3a_incremental_climate_r2.R
+Figure_3b_climate_driver_ALE.R
+Figure_3c_ALE_threshold_heatmap.R
+
+Figure_4ab_threshold_shift_summary.R
+Figure_4c_threshold_shift_maps.R
+```
+
+Figures 3c and 4 depend on the threshold CSV files generated by Figure 3b. Figures 1, 2, and 3a can be executed independently when their required input data are available.
+
+## Software Requirements
+
+All analyses are implemented in R.
+
+Install the required packages from the repository root:
+
+```r
+source("requirements.R")
+```
+
+Principal dependencies include:
+
+`dplyr`, `tidyr`, `readr`, `data.table`, `ggplot2`, `stringr`, `lubridate`, `xgboost`, `ranger`, `iml`, `Matrix`, `sf`, `usmap`, `patchwork`, `cowplot`, `ggrepel`, `scales`, `purrr`, and `conflicted`.
+
+## Input and Output Directories
+
+The scripts use configurable environment variables to specify data and figure directories.
+
+```r
+Sys.setenv(
+  FIG3_INPUT_DIR = "data/processed",
+  FIG3_OUTPUT_DIR = "results/figure3",
+  FIG4_OUTPUT_DIR = "results/figure4"
+)
+```
+
+Other scripts may use additional input and output environment variables, as documented in their headers.
+
+The repository does not require access to institution-specific network paths when the necessary datasets are available locally.
+
+## Reproducibility and Interpretation
+
+The figures represent observational and predictive analyses of climate–power outage relationships. Model feature importance, incremental predictive R², and accumulated local effects describe statistical or model-based relationships and do not establish causality.
+
+ALE zero-crossing thresholds are derived from fitted model-response curves. They should not be interpreted automatically as physical safety thresholds.
+
+The analyses compare historical (2015–2018) and recent (2019–2022) periods where applicable. Figure 1 uses the longer 2015–2024 outage record.
+
+Some figures use different standardization denominators for threshold shifts; these are documented in the corresponding scripts and should be considered when comparing results.
+
+## Data Availability
+
+EAGLE-I power outage observations and CONUS404 climate data are the primary underlying data sources.
+
+Merged analysis datasets and intermediate threshold CSV files are required for reproducing the machine-learning figures. Access to underlying datasets and any associated redistribution restrictions should be considered separately.
+
+## Contact
+
+**Danlu Cai**  
+University of Alabama in Huntsville
