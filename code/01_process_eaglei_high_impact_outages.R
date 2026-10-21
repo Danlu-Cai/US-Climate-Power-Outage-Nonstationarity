@@ -14,26 +14,6 @@
 # continuous county-level outage event lasting > 8 hours.
 #
 # Dependencies: data.table, lubridate
-# 
-# Purpose: Aggregate EAGLE-I 15-minute county outage snapshots (2015–2024),
-#          identify qualifying continuous county-level outage events, and
-#          create hourly, daily, monthly and annual summaries.
-#
-# Definition: A high-impact county-day has (1) observed daily COH > 5,000
-#              AND (2) overlaps an event with > 8 consecutive complete clock
-#              hours of positive customer-outage observations.
-#
-# IMPORTANT ASSUMPTIONS (verify against original data and Methods):
-#   - One observation per county per 15-minute slot; duplicates are rejected/deduplicated.
-#   - A qualifying outage hour requires all four quarter-hour slots present
-#     AND customers_out > 0 in all four slots. Missing slots break continuity.
-#   - COH = sum(customers_out * 0.25) across observed 15-minute slots.
-#   - Daily outage hours = number of positive 15-minute observations * 0.25;
-#     this is county-level positive-snapshot time, NOT customer interruption
-#     duration or a measure of service continuity for individual customers.
-#   - Each day overlapping a qualifying event must separately exceed 5,000 COH.
-#   - Timestamps must be expressed in one consistent timezone. Default UTC.
-#   - All annual files must be available to detect events crossing year ends.
 # =============================================================================
 
 suppressPackageStartupMessages({
