@@ -17,10 +17,12 @@ library(sf)         # For spatial feature handling
 library(patchwork)  # For multi-panel grid layout
 library(ggrepel)    # For non-overlapping state callout text with arrows
 
-# Match the directory structure used by Figure 3b.
-fig3_output_dir <- Sys.getenv("FIG3_OUTPUT_DIR", unset = "results/figure3")
-output_dir <- Sys.getenv("FIG4_OUTPUT_DIR", unset = "results/figure4")
-if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+input_base_dir <- Sys.getenv("FIG3_INPUT_DIR", unset = "data/processed")
+output_dir     <- Sys.getenv("FIG4_OUTPUT_DIR", unset = "results/figure3")
+
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
 
 non_conus_abbr <- c("AK", "HI", "PR", "VI", "GU", "MP", "AS")
 
@@ -219,7 +221,7 @@ build_fig4c_legend <- function() {
              fontface = "bold", size = 9.0) +
     
     # Axis Title at bottom
-    annotate("text", x = 0, y = -0.75, label = "Standardized threshold shift (Δ / IQR of shifts)", 
+    annotate("text", x = 0, y = -0.75, label = "Standardized threshold shift (Δ / historical IQR)", 
              fontface = "bold", size = 9.5, color = "#111111") +
     
     # Grey Box & Label on Right Side
@@ -304,7 +306,7 @@ build_fig4c_map_grid <- function(df_raw) {
 # ==============================================================================
 run_fig4c_export <- function(metric_name = "monthly_coh", model_type = "RF") {
   
-  fig3b_folder <- file.path(fig3_output_dir, paste0("Figure3b_", metric_name, "_", model_type))
+  fig3b_folder <- file.path(input_base_dir, paste0("Figure3b_", metric_name, "_", model_type))
   csv_input_path <- file.path(fig3b_folder, "All_Regions_TwoPeriod_SafetyWindow_Thresholds.csv")
   
   if (!file.exists(csv_input_path)) {
@@ -314,14 +316,6 @@ run_fig4c_export <- function(metric_name = "monthly_coh", model_type = "RF") {
   
   df_raw <- read.csv(csv_input_path, stringsAsFactors = FALSE, colClasses = "character")
   names(df_raw) <- tolower(names(df_raw))
-  if (!"region_type" %in% names(df_raw)) {
-    stop("Figure 3b threshold CSV must contain Region_Type to identify state-level rows.")
-  }
-  df_raw <- df_raw[tolower(trimws(df_raw$region_type)) %in% c("statewise", "state"), , drop = FALSE]
-  if (nrow(df_raw) == 0) {
-    warning("No state-level thresholds available in: ", csv_input_path)
-    return(NULL)
-  }
   
   p_4c <- build_fig4c_map_grid(df_raw)
   
@@ -342,3 +336,4 @@ run_fig4c_export <- function(metric_name = "monthly_coh", model_type = "RF") {
 
 # Run execution
 run_fig4c_export(metric_name = "monthly_outage_hours", model_type = "RF")
+}
