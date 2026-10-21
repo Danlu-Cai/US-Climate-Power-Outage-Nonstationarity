@@ -23,10 +23,15 @@ suppressPackageStartupMessages({
 })
 
 # ---- USER CONFIGURATION AND PATH CHECKS --------------------------------------
-INPUT_DIR  <- Sys.getenv("MERGED_DATA_INPUT_DIR", 
-                         unset = "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/Merged_Datasets_Dual/updated_datasets")
-OUTPUT_DIR <- Sys.getenv("ML_ATTRIBUTION_OUTPUT_DIR", 
-                         unset = "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/Merged_Datasets_Dual/updated_datasets/national_plots")
+INPUT_DIR <- Sys.getenv(
+  "MERGED_DATA_INPUT_DIR",
+  unset = "data/processed/merged"
+)
+
+OUTPUT_DIR <- Sys.getenv(
+  "ML_ATTRIBUTION_OUTPUT_DIR",
+  unset = "results/national_ml_attribution"
+)
 
 CSV_DIR  <- file.path(OUTPUT_DIR, "csv_results")
 PLOT_DIR <- file.path(OUTPUT_DIR, "plots")
