@@ -32,9 +32,9 @@ conflicts_prefer(dplyr::lag)
 # --- 1. Global Setup & Core Helper Functions ---
 # ==============================================================================
 
-Input_ROOT <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related" 
-save_path  <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related_final" 
-csv_path   <- file.path(save_path, "Fig2_csv_results") 
+Input_ROOT <- Sys.getenv("FIGURE2_INPUT_DIR", unset = "data/processed")
+save_path  <- Sys.getenv("FIGURE2_OUTPUT_DIR", unset = "results/figures/figure2")
+csv_path   <- file.path(save_path, "Fig2_csv_results")
 
 if (!dir.exists(save_path)) dir.create(save_path, recursive = TRUE)
 if (!dir.exists(csv_path))  dir.create(csv_path, recursive = TRUE)
