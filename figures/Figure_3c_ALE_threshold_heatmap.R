@@ -6,7 +6,6 @@
 # Description: Heatmap of descriptive ALE zero-crossing shifts using Figure 3b outputs.
 # Dependencies: dplyr, tidyr, ggplot2, stringr, cowplot, grid, scales
 # =============================================================================
-
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -18,8 +17,8 @@ library(scales)
 # ==============================================================================
 # CONFIGURATION & PATHS
 # ==============================================================================
-input_base_dir <- Sys.getenv("FIG3_OUTPUT_DIR", unset = "results/figure3")
-output_dir <- input_base_dir
+input_base_dir <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related"
+output_dir     <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related_final"
 
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
@@ -107,9 +106,6 @@ process_fig3c_data <- function(csv_path) {
   
   df_raw <- read.csv(csv_path, stringsAsFactors = FALSE)
   names(df_raw) <- tolower(names(df_raw))
-  required <- c("region", "region_type", "variable", "historical_threshold_x", "recent_threshold_x")
-  missing <- setdiff(required, names(df_raw))
-  if (length(missing)) stop("Missing Figure 3b threshold columns: ", paste(missing, collapse = ", "))
   
   fips_col <- NULL
   for (col in c("fips", "geoid", "county_fips", "region", "abbr")) {
@@ -118,7 +114,7 @@ process_fig3c_data <- function(csv_path) {
   
   df_proc <- df_raw %>%
     mutate(
-      abbr = if (!is.null(fips_col)) str_trim(as.character(.data[[fips_col]])) else NA_character_,
+      abbr = if (!is.null(fips_col)) str_trim(get(fips_col)) else NA_character_,
       abbr = gsub("^000", "", abbr),
       recent_threshold_x     = as.numeric(recent_threshold_x),
       historical_threshold_x = as.numeric(historical_threshold_x),
@@ -128,10 +124,10 @@ process_fig3c_data <- function(csv_path) {
     filter(!abbr %in% non_conus_abbr, !is.na(variable_clean))
   
   # Baseline for IQR estimation
-  df_state_level <- if ("region_type" %in% names(df_proc) && any(tolower(df_proc$region_type) %in% c("state", "statewise"))) {
-    df_proc %>% filter(tolower(region_type) %in% c("state", "statewise"))
+  df_state_level <- if ("region_type" %in% names(df_proc) && any(tolower(df_proc$region_type) == "state")) {
+    df_proc %>% filter(tolower(region_type) == "state")
   } else {
-    stop("Statewise rows are required to calculate historical state-level IQR.")
+    df_proc
   }
   
   df_iqr <- df_state_level %>%
@@ -145,7 +141,7 @@ process_fig3c_data <- function(csv_path) {
   # Regional summaries (excluding raw CONUS rows to prevent duplicate text overlay)
   df_regional <- df_proc %>%
     filter(
-      tolower(region_type) == "ncei region",
+      (tolower(region_type) == "ncei region" | region %in% names(region_name_map)),
       !region %in% c("All CONUS", "CONUS", "National", "All")
     ) %>%
     mutate(region_disp = recode(region, !!!region_name_map)) %>%
@@ -159,7 +155,6 @@ process_fig3c_data <- function(csv_path) {
   
   # CONUS Summary
   df_conus <- df_proc %>%
-    filter(tolower(region_type) == "conus") %>%
     group_by(variable_clean) %>%
     summarise(
       med_hist = median(historical_threshold_x, na.rm = TRUE),
@@ -170,7 +165,6 @@ process_fig3c_data <- function(csv_path) {
     mutate(region_disp = "All\nCONUS")
   
   # Combine & Standardize
-  if (nrow(df_conus) == 0) stop("Figure 3b threshold file has no CONUS rows")
   df_combined <- bind_rows(df_regional, df_conus) %>%
     distinct(region_disp, variable_clean, .keep_all = TRUE) %>%
     left_join(df_iqr, by = "variable_clean") %>%
@@ -321,6 +315,12 @@ run_fig3c_export <- function(metric_name = "monthly_coh", model_type = "RF") {
     message(">> Successfully exported Figure 3c Heatmap to: ", png_out_path)
   }
 }
+
+# Execute for all 4 model runs
+run_fig3c_export(metric_name = "monthly_coh",          model_type = "XGBoost")
+run_fig3c_export(metric_name = "monthly_coh",          model_type = "RF")
+run_fig3c_export(metric_name = "monthly_outage_hours", model_type = "XGBoost")
+run_fig3c_export(metric_name = "monthly_outage_hours", model_type = "RF")
 
 # Execute for all 4 model runs
 run_fig3c_export(metric_name = "monthly_coh",          model_type = "XGBoost")
