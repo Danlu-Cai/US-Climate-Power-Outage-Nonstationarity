@@ -6,8 +6,17 @@
 
 suppressPackageStartupMessages(library(data.table))
 
-INPUT_DIR <- Sys.getenv("CONUS404_DAILY_INPUT_DIR", unset = "data/raw/conus404/daily_county_mean")
-OUTPUT_DIR <- Sys.getenv("CONUS404_DD_OUTPUT_DIR", unset = "results/conus404_degree_days")
+
+INPUT_DIR <- Sys.getenv(
+  "CONUS404_DAILY_INPUT_DIR",
+  unset = "data/raw/conus404/daily_county"
+)
+
+OUTPUT_DIR <- Sys.getenv(
+  "CONUS404_DD_OUTPUT_DIR",
+  unset = "results/conus404_degree_days"
+)
+
 SCALE <- "county"
 BASE_TEMP_C <- 18.3
 START_MONTH <- "197910"
