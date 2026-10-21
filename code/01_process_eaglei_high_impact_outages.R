@@ -32,8 +32,18 @@ suppressPackageStartupMessages({
 })
 
 # ---- USER CONFIGURATION ------------------------------------------------------
-INPUT_DIR <- "//uahdata/rgroup/urbanrs/Danlu_data/2025-NSF/eagle-i"
-OUTPUT_DIR <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds_TEST"
+# Input directory containing annual EAGLE-I CSV files
+INPUT_DIR <- Sys.getenv(
+  "EAGLEI_INPUT_DIR",
+  unset = "data/raw/eagle-i"
+)
+
+# Directory for generated results
+OUTPUT_DIR <- Sys.getenv(
+  "EAGLEI_OUTPUT_DIR",
+  unset = "results/eaglei_high_impact"
+)
+
 YEARS <- 2015:2024
 TIMEZONE <- 'UTC'               # Verify timezone of run_start_time in source files.
 DURATION_THRESHOLD_HOURS <- 8L  # Strictly greater than 8 hours.
