@@ -1,7 +1,20 @@
+
 # =============================================================================
-# 01_process_eaglei_high_impact_outages.R
-# Climate–Power Outage Relationships Across the United States
+# Script: 01_process_eaglei_high_impact_outages.R
+# Project: Climate–Power Outage Relationships Across the United States
+# Author: Danlu Cai
 #
+# Description:
+# Process EAGLE-I 15-minute county-level power outage observations
+# (2015–2024) to identify high-impact outage events and generate
+# hourly, daily, monthly, and annual outage summaries.
+#
+# High-impact definition:
+# Daily customer outage hours (COH) > 5,000 and overlap with a
+# continuous county-level outage event lasting > 8 hours.
+#
+# Dependencies: data.table, lubridate
+# =============================================================================
 # Purpose: Aggregate EAGLE-I 15-minute county outage snapshots (2015–2024),
 #          identify qualifying continuous county-level outage events, and
 #          create hourly, daily, monthly and annual summaries.
