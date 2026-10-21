@@ -17,8 +17,8 @@ library(scales)
 # ==============================================================================
 # CONFIGURATION & PATHS
 # ==============================================================================
-input_base_dir <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related"
-output_dir     <- "//uahdata/rgroup/urbanrs/Danlu_data/2026-Digicare/0-eaglei_8hr_5000COH_Thresholds/NatureCC_related_final"
+input_base_dir <- Sys.getenv("FIG3_INPUT_DIR", unset = "data/processed")
+output_dir     <- Sys.getenv("FIG3_OUTPUT_DIR", unset = "results/figure3")
 
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
