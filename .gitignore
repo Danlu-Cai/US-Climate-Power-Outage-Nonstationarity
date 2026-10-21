@@ -1,0 +1,18 @@
+
+# R session files
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Local configuration
+.Renviron
+.Rprofile
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Temporary outputs
+*.log
+results/
