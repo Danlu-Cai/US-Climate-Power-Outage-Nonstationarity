@@ -1,19 +1,17 @@
 
-# R package dependencies for the climate–power outage analysis
+# R package dependencies
+# EAGLE-I high-impact outage processing
 
 required_packages <- c(
-  "tidyverse",
-  "lubridate",
-  "conflicted"
+  "data.table",
+  "lubridate"
 )
 
-missing_packages <- required_packages[
-  !vapply(required_packages, requireNamespace,
-          logical(1), quietly = TRUE)
-]
+missing_packages <- setdiff(
+  required_packages,
+  rownames(installed.packages())
+)
 
 if (length(missing_packages) > 0) {
   install.packages(missing_packages)
 }
-
-message("Required R packages are installed.")
